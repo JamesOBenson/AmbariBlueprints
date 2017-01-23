@@ -1,0 +1,418 @@
+{
+  "Blueprints": {
+    "blueprint_name": "dev2_blueprint",
+    "stack_name": "HDP",
+    "stack_version": "2.5"
+  },
+  "host_groups": [
+    {
+      "name": "gateway",
+      "cardinality" : "1",
+      "configurations" : [ ],
+      "components": [
+        { "name": "DATANODE" },
+        { "name": "HDFS_CLIENT" },
+        { "name": "MAPREDUCE2_CLIENT" },
+        { "name": "METRICS_COLLECTOR" },
+        { "name": "METRICS_MONITOR" },
+        { "name": "TEZ_CLIENT" },
+        { "name": "YARN_CLIENT" },
+        { "name": "ZOOKEEPER_CLIENT" }
+      ]
+    },
+    {
+      "name": "master_1",
+      "cardinality" : "1",
+      "configurations" : [ ],
+      "components": [
+        { "name": "AMBARI_SERVER" },
+        { "name": "HDFS_CLIENT" },
+        { "name": "HISTORYSERVER" },
+        { "name": "HIVE_CLIENT" },
+        { "name": "JOURNALNODE" },
+        { "name": "MAPREDUCE2_CLIENT" },
+        { "name": "METRICS_MONITOR" },
+        { "name": "NAMENODE" },
+        { "name": "OOZIE_CLIENT" },
+        { "name": "SPARK_CLIENT" },
+        { "name": "SPARK_JOBHISTORYSERVER" },
+        { "name": "TEZ_CLIENT" },
+        { "name": "YARN_CLIENT" },
+        { "name": "ZKFC" },
+        { "name": "ZOOKEEPER_CLIENT" },
+        { "name": "ZOOKEEPER_SERVER" }
+      ]
+    },
+    {
+      "name": "master_2",
+      "cardinality" : "1",
+      "configurations" : [ ],
+      "components": [
+        { "name": "HDFS_CLIENT" },
+        { "name": "HIVE_CLIENT" },
+        { "name": "JOURNALNODE" },
+        { "name": "MAPREDUCE2_CLIENT" },
+        { "name": "METRICS_MONITOR" },
+        { "name": "MYSQL_SERVER" },
+        { "name": "NAMENODE" },
+        { "name": "OOZIE_CLIENT" },
+        { "name": "PIG" },
+        { "name": "RANGER_USERSYNC"},
+        { "name": "RANGER_ADMIN"},
+        { "name": "RANGER_KMS_SERVER"},
+        { "name": "RESOURCEMANAGER" },
+        { "name": "SPARK_CLIENT" },
+        { "name": "TEZ_CLIENT" },
+        { "name": "WEBHCAT_SERVER" },
+        { "name": "YARN_CLIENT" },
+        { "name": "ZKFC" },
+        { "name": "ZOOKEEPER_CLIENT" },
+        { "name": "ZOOKEEPER_SERVER" }
+      ]
+    },
+    {
+      "name": "master_3",
+      "cardinality" : "1",
+      "configurations" : [ ],
+      "components": [
+        { "name": "APP_TIMELINE_SERVER" },
+        { "name": "HDFS_CLIENT" },
+        { "name": "HIVE_CLIENT" },
+        { "name": "HIVE_METASTORE" },
+        { "name": "HIVE_SERVER" },
+        { "name": "JOURNALNODE" },
+        { "name": "MAPREDUCE2_CLIENT" },
+        { "name": "METRICS_GRAFANA" },
+        { "name": "METRICS_MONITOR" },
+        { "name": "OOZIE_CLIENT" },
+        { "name": "OOZIE_SERVER" },
+        { "name": "PIG" },
+        { "name": "RESOURCEMANAGER" },
+        { "name": "SPARK_CLIENT" },
+        { "name": "TEZ_CLIENT" },
+        { "name": "YARN_CLIENT" },
+        { "name": "ZOOKEEPER_SERVER" },
+        { "name": "ZOOKEEPER_CLIENT" }
+      ]
+    },
+    {
+      "name": "worker_1",
+      "cardinality" : "1+",
+      "configurations" : [ ],
+      "components": [
+        { "name": "DATANODE" },
+        { "name": "HDFS_CLIENT" },
+        { "name": "HIVE_CLIENT" },
+        { "name": "MAPREDUCE2_CLIENT" },
+        { "name": "METRICS_MONITOR" },
+        { "name": "NODEMANAGER" },
+        { "name": "OOZIE_CLIENT" },
+        { "name": "SPARK_CLIENT" },
+        { "name": "TEZ_CLIENT" },
+        { "name": "YARN_CLIENT" },
+        { "name": "ZOOKEEPER_CLIENT" }
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      "core-site": {
+        "properties" : {
+          "fs.defaultFS" : "hdfs://mycluster",
+          "ha.zookeeper.quorum" : "%HOSTGROUP::master_1%:2181,%HOSTGROUP::master_2%:2181,%HOSTGROUP::master_3%:2181"
+      }}
+    },
+    {
+      "hdfs-site": {
+        "properties" : {
+          "dfs.client.failover.proxy.provider.mycluster" : "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider",
+          "dfs.ha.automatic-failover.enabled" : "true",
+          "dfs.ha.fencing.methods" : "shell(/bin/true)",
+          "dfs.ha.namenodes.mycluster" : "nn1,nn2",
+          "dfs.namenode.http-address" : "%HOSTGROUP::master_1%:50070",
+          "dfs.namenode.http-address.mycluster.nn1" : "%HOSTGROUP::master_1%:50070",
+          "dfs.namenode.http-address.mycluster.nn2" : "%HOSTGROUP::master_2%:50070",
+          "dfs.namenode.https-address" : "%HOSTGROUP::master_1%:50470",
+          "dfs.namenode.https-address.mycluster.nn1" : "%HOSTGROUP::master_1%:50470",
+          "dfs.namenode.https-address.mycluster.nn2" : "%HOSTGROUP::master_2%:50470",
+          "dfs.namenode.rpc-address.mycluster.nn1" : "%HOSTGROUP::master_1%:8020",
+          "dfs.namenode.rpc-address.mycluster.nn2" : "%HOSTGROUP::master_2%:8020",
+          "dfs.namenode.shared.edits.dir" : "qjournal://%HOSTGROUP::master_1%:8485;%HOSTGROUP::master_2%:8485;%HOSTGROUP::master_3%:8485/mycluster",
+          "dfs.nameservices" : "mycluster",
+          "dfs.datanode.data.dir" : "/mnt/hdfs/data",
+          "dfs.journalnode.edits.dir" : "/mnt/hdfs/journalnode",
+          "dfs.namenode.checkpoint.dir" : "/mnt/hdfs/namesecondary",
+          "dfs.namenode.name.dir" : "/mnt/hdfs/namenode",
+          "dfs.block.access.token.enable" : "true",
+          "dfs.encryption.key.provider.uri" : "kms://http@%HOSTGROUP::master_2%:9292/kms",
+          "dfs.namenode.inode.attributes.provider.class" : "org.apache.ranger.authorization.hadoop.RangerHdfsAuthorizer"
+      }}
+    },
+    {
+      "yarn-site" : {
+        "properties" : {
+          "hadoop.registry.rm.enabled" : "false",
+          "hadoop.registry.zk.quorum" : "%HOSTGROUP::master_3%:2181,%HOSTGROUP::master_2%:2181,%HOSTGROUP::master_1%:2181",
+          "yarn.log.server.url" : "http://%HOSTGROUP::master_2%:19888/jobhistory/logs",
+          "yarn.resourcemanager.address" : "%HOSTGROUP::master_2%:8050",
+          "yarn.resourcemanager.admin.address" : "%HOSTGROUP::master_2%:8141",
+          "yarn.resourcemanager.cluster-id" : "yarn-cluster",
+          "yarn.resourcemanager.ha.automatic-failover.zk-base-path" : "/yarn-leader-election",
+          "yarn.resourcemanager.ha.enabled" : "true",
+          "yarn.resourcemanager.ha.rm-ids" : "rm1,rm2",
+          "yarn.resourcemanager.hostname" : "%HOSTGROUP::master_2%",
+          "yarn.resourcemanager.recovery.enabled" : "true",
+          "yarn.resourcemanager.resource-tracker.address" : "%HOSTGROUP::master_2%:8025",
+          "yarn.resourcemanager.scheduler.address" : "%HOSTGROUP::master_2%:8030",
+          "yarn.resourcemanager.store.class" : "org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore",
+          "yarn.resourcemanager.webapp.address" : "%HOSTGROUP::master_2%:8088",
+          "yarn.resourcemanager.webapp.https.address" : "%HOSTGROUP::master_2%:8090",
+          "yarn.timeline-service.address" : "%HOSTGROUP::master_2%:10200",
+          "yarn.timeline-service.webapp.address" : "%HOSTGROUP::master_2%:8188",
+          "yarn.timeline-service.webapp.https.address" : "%HOSTGROUP::master_2%:8190"
+        }
+      }
+    },
+    {
+      "oozie-site" : {
+        "oozie.service.AuthorizationService.security.enabled" : "false"
+      }
+    },
+    {
+      "admin-properties" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "DB_FLAVOR" : "MYSQL",
+          "audit_db_name" : "ranger_audit",
+          "db_name" : "ranger",
+          "audit_db_user" : "rangerlogger",
+          "SQL_CONNECTOR_JAR" : "/usr/share/java/mysql-connector-java.jar",
+          "db_user" : "rangeradmin",
+          "policymgr_external_url" : "http://%HOSTGROUP::master_2%:6080",
+          "db_host" : "BLUEPRINT_DB_HOST:3306",
+          "db_root_user" : "root",
+          "db_root_password" : "BLUEPRINT_PASSWORD"
+        }
+      }
+    },
+    {
+      "ranger-kms-security" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.plugin.kms.policy.source.impl" : "org.apache.ranger.admin.client.RangerAdminRESTClient",
+          "ranger.plugin.kms.service.name" : "{{repo_name}}",
+          "ranger.plugin.kms.policy.rest.url" : "{{policymgr_mgr_url}}"
+        }
+      }
+    },
+    {
+      "kms-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "hadoop.kms.security.authorization.manager" : "org.apache.ranger.authorization.kms.authorizer.RangerKmsAuthorizer",
+          "hadoop.kms.key.provider.uri" : "dbks://http@localhost:9292/kms"
+        }
+      }
+    },
+    {
+      "ranger-hdfs-plugin-properties" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "REPOSITORY_CONFIG_USERNAME" : "hadoop",
+          "ranger-hdfs-plugin-enabled" : "Yes",
+          "common.name.for.certificate" : "",
+          "policy_user" : "ambari-qa",
+          "hadoop.rpc.protection" : ""
+        }
+      }
+    },
+    {
+      "ranger-admin-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.ldap.group.searchfilter" : "(member=cn={0},ou=hdp,dc=BLUEPRINT_DC,dc=BLUEPRINT_DC2,dc=BLUEPRINT_DC3)",
+          "ranger.ldap.group.searchbase" : "ou=hdp,dc=BLUEPRINT_DC,dc=BLUEPRINT_DC2,dc=BLUEPRINT_DC3",
+          "ranger.sso.enabled" : "false",
+          "ranger.externalurl" : "{{ranger_external_url}}",
+          "ranger.sso.browser.useragent" : "Mozilla,chrome",
+          "ranger.service.https.attrib.ssl.enabled" : "false",
+          "ranger.ldap.ad.referral" : "follow",
+          "ranger.jpa.jdbc.url" : "jdbc:mysql://BLUEPRINT_DB_HOST:3306/ranger",
+          "ranger.https.attrib.keystore.file" : "/etc/ranger/admin/conf/ranger-admin-keystore.jks",
+          "ranger.ldap.user.searchfilter" : "{{ranger_ug_ldap_user_searchfilter}}",
+          "ranger.jpa.jdbc.driver" : "com.mysql.jdbc.Driver",
+          "ranger.authentication.method" : "ACTIVE_DIRECTORY",
+          "ranger.service.host" : "{{ranger_host}}",
+          "ranger.jpa.audit.jdbc.user" : "{{ranger_audit_db_user}}",
+          "ranger.ldap.referral" : "ignore",
+          "ranger.jpa.audit.jdbc.credential.alias" : "rangeraudit",
+          "ranger.service.https.attrib.keystore.pass" : "admin",
+          "ranger.audit.solr.username" : "ranger_solr",
+          "ranger.sso.query.param.originalurl" : "originalUrl",
+          "ranger.service.http.enabled" : "true",
+          "ranger.audit.source.type" : "db",
+          "ranger.ldap.url" : "ldaps://BLUEPRINT_LDAP_URL:636",
+          "ranger.service.https.attrib.clientAuth" : "want",
+          "ranger.ldap.ad.domain" : "BLUEPRINT_DOMAIN_URL",
+          "ranger.ldap.ad.bind.dn" : "cn=hdp-admin,ou=hdp,dc=BLUEPRINT_DC,dc=BLUEPRINT_DC2,dc=BLUEPRINT_DC3",
+          "ranger.credential.provider.path" : "/etc/ranger/admin/rangeradmin.jceks",
+          "ranger.jpa.audit.jdbc.driver" : "{{ranger_jdbc_driver}}",
+          "ranger.audit.solr.urls" : "http://solr_host:6083/solr/ranger_audits",
+          "ranger.sso.publicKey" : "",
+          "ranger.ldap.bind.dn" : "{{ranger_ug_ldap_bind_dn}}",
+          "ranger.unixauth.service.port" : "5151",
+          "ranger.ldap.group.roleattribute" : "cn",
+          "ranger.jpa.jdbc.dialect" : "{{jdbc_dialect}}",
+          "ranger.sso.cookiename" : "hadoop-jwt",
+          "ranger.service.https.attrib.keystore.keyalias" : "rangeradmin",
+          "ranger.audit.solr.zookeepers" : "NONE",
+          "ranger.jpa.jdbc.user" : "{{ranger_db_user}}",
+          "ranger.jpa.jdbc.credential.alias" : "rangeradmin",
+          "ranger.ldap.ad.user.searchfilter" : "{{ranger_ug_ldap_user_searchfilter}}",
+          "ranger.ldap.user.dnpattern" : "cn=hdp-admin,ou=hdp,dc=BLUEPRINT_DC,dc=BLUEPRINT_DC2,dc=BLUEPRINT_DC3",
+          "ranger.ldap.base.dn" : "dc=example,dc=com",
+          "ranger.service.http.port" : "6080",
+          "ranger.jpa.audit.jdbc.url" : "{{audit_jdbc_url}}",
+          "ranger.service.https.port" : "6182",
+          "ranger.sso.providerurl" : "",
+          "ranger.ldap.ad.url" : "ldaps://BLUEPRINT_LDAP_URL:636",
+          "ranger.jpa.audit.jdbc.dialect" : "{{jdbc_dialect}}",
+          "ranger.unixauth.remote.login.enabled" : "true",
+          "ranger.ldap.ad.base.dn" : "dc=BLUEPRINT_DC,dc=BLUEPRINT_DC2,dc=BLUEPRINT_DC3",
+          "ranger.unixauth.service.hostname" : "localhost"
+        }
+      }
+    },
+    {
+      "dbks-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.ks.jpa.jdbc.url" : "jdbc:mysql://BLUEPRINT_DB_HOST:3306/rangerkms",
+          "hadoop.kms.blacklist.DECRYPT_EEK" : "hdfs",
+          "ranger.ks.jpa.jdbc.dialect" : "{{jdbc_dialect}}",
+          "ranger.ks.jdbc.sqlconnectorjar" : "{{driver_curl_target}}",
+          "ranger.ks.jpa.jdbc.user" : "{{db_user}}",
+          "ranger.ks.jpa.jdbc.credential.alias" : "ranger.ks.jdbc.password",
+          "ranger.ks.jpa.jdbc.credential.provider.path" : "/etc/ranger/kms/rangerkms.jceks",
+          "ranger.ks.masterkey.credential.alias" : "ranger.ks.masterkey.password",
+          "ranger.ks.jpa.jdbc.driver" : "com.mysql.jdbc.Driver"
+        }
+      }
+    },
+    {
+      "kms-env" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "kms_log_dir" : "/var/log/ranger/kms",
+          "create_db_user" : "true",
+          "kms_group" : "kms",
+          "kms_user" : "kms",
+          "kms_port" : "9292"
+        }
+      }
+    },
+    {
+      "ranger-hdfs-security" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.plugin.hdfs.policy.source.impl" : "org.apache.ranger.admin.client.RangerAdminRESTClient"
+        }
+      }
+    },
+    {
+      "ranger-env" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "xml_configurations_supported" : "true",
+          "ranger_user" : "ranger",
+          "create_db_dbuser" : "true",
+          "ranger-hdfs-plugin-enabled" : "Yes",
+          "ranger-knox-plugin-enabled" : "No",
+          "is_solrCloud_enabled" : "false",
+          "bind_anonymous" : "false",
+          "ranger-yarn-plugin-enabled" : "Yes",
+          "ranger-kafka-plugin-enabled" : "No",
+          "xasecure.audit.destination.hdfs" : "true",
+          "xasecure.audit.destination.hdfs.dir" : "hdfs://mycluster:8020/ranger/audit",
+          "ranger-hive-plugin-enabled" : "No",
+          "xasecure.audit.destination.solr" : "true",
+          "xasecure.audit.destination.db" : "false",
+          "ranger_group" : "ranger",
+          "ranger_admin_username" : "amb_ranger_admin",
+          "ranger_admin_password" : "BLUEPRINT_PASSWORD",
+          "ranger-hbase-plugin-enabled" : "Yes",
+          "admin_username" : "admin",
+          "ranger_admin_log_dir" : "/var/log/ranger/admin"
+        }
+      }
+    },
+    {
+      "kms-properties" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "REPOSITORY_CONFIG_USERNAME" : "keyadmin@BLUEPRINT_DOMAIN_URL_IN_CAPS
+          "KMS_MASTER_KEY_PASSWD" : "BLUEPRINT_PASSWORD",
+          "DB_FLAVOR" : "MYSQL",
+          "db_name" : "rangerkms",
+          "SQL_CONNECTOR_JAR" : "/usr/share/java/mysql-connector-java.jar",
+          "db_user" : "rangerkms",
+          "db_password" : "BLUEPRINT_PASSWORD",
+          "db_host" : "BLUEPRINT_DB_HOST:3306",
+          "db_root_user" : "amb_ranger_admin",
+          "db_root_password" : "BLUEPRINT_PASSWORD"
+        }
+      }
+    },
+    {
+      "ranger-yarn-security" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.plugin.yarn.policy.source.impl" : "org.apache.ranger.admin.client.RangerAdminRESTClient"
+        }
+      }
+    },
+    {
+      "usersync-properties" : {
+        "properties_attributes" : { },
+        "properties" : { }
+      }
+    },
+    {
+      "ranger-hbase-security" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "ranger.plugin.hbase.policy.source.impl" : "org.apache.ranger.admin.client.RangerAdminRESTClient"
+        }
+      }
+    },
+    {
+      "ranger-yarn-plugin-properties" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "REPOSITORY_CONFIG_USERNAME" : "yarn",
+          "common.name.for.certificate" : "",
+          "ranger-yarn-plugin-enabled" : "Yes",
+          "policy_user" : "ambari-qa",
+          "hadoop.rpc.protection" : ""
+        }
+      }
+    },
+    {
+      "ranger-hbase-plugin-properties" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "REPOSITORY_CONFIG_USERNAME" : "hbase",
+          "common.name.for.certificate" : "",
+          "ranger-hbase-plugin-enabled" : "Yes",
+          "policy_user" : "ambari-qa"
+        }
+      }
+    },
+    {
+     "hive-site" : {
+       "javax.jdo.option.ConnectionPassword" : "BLUEPRINT_PASSWORD",
+       "javax.jdo.option.ConnectionUserName" : "hive"
+     }
+    }
+  ]
+}
