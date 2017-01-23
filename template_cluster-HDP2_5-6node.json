@@ -1,0 +1,40 @@
+{
+    "blueprint": "dev2_blueprint",
+    "default_password": "password",
+    "configurations": [
+    ],
+    "host_groups": [
+        {
+            "name": "master_1",
+            "hosts": [
+              { "fqdn": "MASTER1_FQDN"}
+            ]
+        },
+        {
+            "name": "master_2",
+            "hosts": [
+              { "fqdn": "MASTER2_FQDN"}
+            ]
+        },
+        {
+            "name": "master_3",
+            "hosts": [
+              { "fqdn": "MASTER3_FQDN"}
+            ]
+        },
+        {
+            "name": "worker_1",
+            "hosts": [
+              { "fqdn": "WORKER1_FQDN"},
+              { "fqdn": "WORKER2_FQDN"}
+            ]
+        },
+        {
+            "name": "gateway",
+            "hosts": [
+              { "fqdn": "GATEWAY1_FQDN"}
+            ]
+        }
+    ],
+ "Clusters" : {"cluster_name":"dev2"}
+}
