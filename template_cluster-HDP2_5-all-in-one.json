@@ -1,0 +1,14 @@
+{
+  "blueprint" : "dev2_blueprint",
+  "default_password": "hadoop",
+  "host_groups" :[
+     {
+      "name" : "master1",
+      "hosts" : [
+        {
+          "fqdn" : "MASTER1_FQDN"
+        }
+      ]
+    }
+  ]
+}
