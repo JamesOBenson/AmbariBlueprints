@@ -1,0 +1,145 @@
+{
+  "Blueprints": {
+    "blueprint_name": "dev2_blueprint",
+    "stack_name": "HDP",
+    "stack_version": "2.5"
+  },
+  "host_groups": [
+    {
+      "name": "master1",
+      "configurations": [],
+      "cardinality": "1",
+      "components": [
+        { "name": "NODEMANAGER" },
+        { "name": "HIVE_SERVER" },
+        { "name": "SPARK2_CLIENT" },
+        { "name": "HIVE_METASTORE" },
+        { "name": "TEZ_CLIENT" },
+        { "name": "KNOX_GATEWAY" },
+        { "name": "SPARK2_JOBHISTORYSERVER" },
+        { "name": "ACTIVITY_ANALYZER" },
+        { "name": "KAFKA_BROKER" },
+        { "name": "SECONDARY_NAMENODE" },
+        { "name": "SLIDER" },
+        { "name": "OOZIE_CLIENT" },
+        { "name": "HBASE_REGIONSERVER" },
+        { "name": "METRICS_GRAFANA" },
+        { "name": "SPARK_CLIENT" },
+        { "name": "HDFS_CLIENT" },
+        { "name": "FALCON_CLIENT" },
+        { "name": "HISTORYSERVER" },
+        { "name": "SUPERVISOR" },
+        { "name": "LOGSEARCH_SERVER" },
+        { "name": "ZEPPELIN_MASTER" },
+        { "name": "ACTIVITY_EXPLORER" },
+        { "name": "AMBARI_SERVER" },
+        { "name": "HBASE_CLIENT" },
+        { "name": "FALCON_SERVER" },
+        { "name": "LOGSEARCH_LOGFEEDER" },
+        { "name": "SPARK_JOBHISTORYSERVER" },
+        { "name": "APP_TIMELINE_SERVER" },
+        { "name": "FLUME_HANDLER" },
+        { "name": "RESOURCEMANAGER" },
+        { "name": "METRICS_MONITOR" },
+        { "name": "INFRA_SOLR_CLIENT" },
+        { "name": "HBASE_MASTER" },
+        { "name": "ZOOKEEPER_CLIENT" },
+        { "name": "HCAT" },
+        { "name": "WEBHCAT_SERVER" },
+        { "name": "ZOOKEEPER_SERVER" },
+        { "name": "DRPC_SERVER" },
+        { "name": "METRICS_COLLECTOR" },
+        { "name": "PHOENIX_QUERY_SERVER" },
+        { "name": "MAHOUT" },
+        { "name": "YARN_CLIENT" },
+        { "name": "SQOOP" },
+        { "name": "SPARK2_THRIFTSERVER" },
+        { "name": "STORM_UI_SERVER" },
+        { "name": "NAMENODE" },
+        { "name": "NIMBUS" },
+        { "name": "PIG" },
+        { "name": "MAPREDUCE2_CLIENT" },
+        { "name": "DATANODE" },
+        { "name": "INFRA_SOLR" },
+        { "name": "OOZIE_SERVER" },
+        { "name": "HIVE_CLIENT" },
+        { "name": "HST_SERVER" }
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      "core-site": {
+        "properties": {
+          "hadoop.proxyuser.root.groups": "*",
+          "hadoop.proxyuser.root.hosts": "*",
+          "hadoop.proxyuser.hcat.groups": "*",
+          "hadoop.proxyuser.hcat.hosts": "*"
+        }
+      }
+    },
+    {
+      "admin-properties": {
+        "properties_attributes": {},
+        "properties": {
+          "db_root_user": "ranger",
+          "DB_FLAVOR": "MYSQL",
+          "db_name": "ranger",
+          "policymgr_external_url": "http://HOSTGROUP::master1%:6080",
+          "db_user": "ranger",
+          "SQL_CONNECTOR_JAR": "/usr/share/java/mysql-connector-java.jar",
+          "db_host": "localhost"
+        }
+      }
+    },
+    {
+      "ranger-admin-site": {
+        "ranger.jpa.jdbc.driver": "com.mysql.jdbc.Driver",
+        "ranger.jpa.jdbc.url": "jdbc:mysql://localhost:3306/ranger",
+        "ranger.jpa.jdbc.user": "ranger",
+        "ranger.jda.jdbc.password": "ranger123"
+      }
+    },
+    {
+      "hive-site": {
+        "hive.support.concurrency": "true",
+        "hive.txn.manager": "org.apache.hadoop.hive.ql.lockmgr.DbTxnManager",
+        "hive.compactor.initiator.on": "true",
+        "hive.compactor.worker.threads": "5",
+        "javax.jdo.option.ConnectionDriverName": "org.postgresql.Driver",
+        "javax.jdo.option.ConnectionPassword": "hive",
+        "javax.jdo.option.ConnectionURL": "jdbc:postgresql://localhost/hive?createDatabaseIfNotExist=true",
+        "javax.jdo.option.ConnectionUserName": "hive"
+      }
+    },
+    {
+      "hive-env": {
+        "hive_ambari_database": "PostgreSQL",
+        "hive_database": "Existing PostgreSQL Database",
+        "hive_database_type": "postgres"
+      }
+    },
+    {
+      "oozie-env": {
+        "properties_attributes": {},
+        "properties": {
+          "oozie_database": "Existing MySQL Database"
+        }
+      }
+    },
+    {
+      "oozie-site": {
+        "properties_attributes": {},
+        "properties": {
+          "oozie.service.JPAService.jdbc.driver": "org.mysql.jdbc.Driver",
+          "oozie.service.AuthorizationService.security.enabled": "true",
+          "oozie.service.JPAService.create.db.schema": "true",
+          "oozie.service.JPAService.jdbc.username": "oozie",
+          "oozie.service.JPAService.jdbc.password": "oozie",
+          "oozie.service.JPAService.jdbc.url": "jdbc:mysql://localhost:5432/oozie",
+          "oozie.db.schema.name": "oozie"
+        }
+      }
+    }
+  ]
+}
