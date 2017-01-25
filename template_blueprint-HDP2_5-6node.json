@@ -350,7 +350,7 @@
       "kms-properties" : {
         "properties_attributes" : { },
         "properties" : {
-          "REPOSITORY_CONFIG_USERNAME" : "keyadmin@BLUEPRINT_DOMAIN_URL_IN_CAPS
+          "REPOSITORY_CONFIG_USERNAME" : "keyadmin@BLUEPRINT_DOMAIN_URL_IN_CAPS",
           "KMS_MASTER_KEY_PASSWD" : "BLUEPRINT_PASSWORD",
           "DB_FLAVOR" : "MYSQL",
           "db_name" : "rangerkms",
